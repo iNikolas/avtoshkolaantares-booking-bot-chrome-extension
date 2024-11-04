@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:main": "vite build",
+    "build:scripts": "vite build --mode scripts",
+    "build": "npm run build:main && npm run build:scripts",
     "lint": "eslint .",
     "preview": "vite preview",
     "prepare": "husky install"
@@ -20,6 +22,7 @@
     "@eslint/js": "^9.13.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/chrome": "^0.0.280",
+    "@types/node": "^22.8.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react-swc": "^3.5.0",

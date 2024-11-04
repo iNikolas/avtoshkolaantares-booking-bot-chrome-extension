@@ -25,7 +25,9 @@
       "@/*": ["./src"],
       "@components": ["./src/components"],
       "@screens": ["./src/screens"],
-      "@utils": ["./src/utils"]
+      "@utils": ["./src/utils"],
+      "@entities": ["./src/entities"],
+      "@config": ["./src/config"]
     }
   },
   "include": ["src"]

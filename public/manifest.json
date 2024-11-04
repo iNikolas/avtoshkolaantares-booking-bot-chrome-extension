@@ -10,5 +10,11 @@
   "host_permissions": ["https://www.booking.avtoshkolaantares.com/*"],
   "icons": {
     "32": "icon-32.png"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.booking.avtoshkolaantares.com/*"],
+      "js": ["content-script.js"]
+    }
+  ]
 }

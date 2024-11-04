@@ -1,6 +1,7 @@
 import { Loader } from "@components";
+import { updateConfig } from "@utils";
 
-import { updateConfig, useConfig, useIsAllowedDomainCheck } from "./utils";
+import { useConfig, useIsAllowedDomainCheck } from "./utils";
 import { allowedDomain } from "./config";
 
 export function BookingForm() {

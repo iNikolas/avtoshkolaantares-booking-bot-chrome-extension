@@ -1,7 +1,8 @@
 import React from "react";
 
-import { Config } from "../types";
-import { retrieveFullConfig } from "./helpers";
+import { Config } from "@entities";
+import { retrieveFullConfig } from "@utils";
+
 import { allowedDomain } from "../config";
 
 export function useConfig() {
