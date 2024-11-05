@@ -14,9 +14,22 @@ import { waitMs } from "@utils";
 
 export async function checkForBooking(
   day: string,
+  timestamps: Config["timestamps"],
 ): Promise<HTMLAnchorElement[]> {
   return new Promise((resolve, reject) => {
     const startTime = performance.now();
+    const desiredHours = new Set(
+      timestamps.reduce<string[]>((acc, val) => {
+        const date = new Date(val);
+        const isCurrentDay = date.getDate().toString() === day;
+
+        if (isCurrentDay) {
+          return [...acc, date.getHours().toString()];
+        }
+
+        return acc;
+      }, []),
+    );
 
     function searchForElement() {
       const bookingTable = document.querySelector<HTMLTableElement>(
@@ -37,7 +50,19 @@ export async function checkForBooking(
         const anchors = Array.from(
           bookingTable.querySelectorAll<HTMLTableRowElement>("tr"),
         )
-          .map((row) => row.querySelector<HTMLAnchorElement>("a"))
+          .map((row) => {
+            const hours = parseInt(
+              row.querySelector<HTMLTableCellElement>("th")?.innerText ??
+                "".split(":")[0],
+            ).toString();
+            const isMatchingTime = desiredHours.has(hours);
+
+            if (!isMatchingTime) {
+              return null;
+            }
+
+            return row.querySelector<HTMLAnchorElement>("a");
+          })
           .filter((row) => !!row);
 
         resolve(anchors);
@@ -81,21 +106,45 @@ export function click(element: HTMLElement) {
   element.dispatchEvent(clickEvent);
 }
 
-export async function confirmBooking() {
+export async function confirmBooking(timestamps: Config["timestamps"]) {
   const submitButton = document.getElementById(bookButtonId);
   const cancelButton = document.getElementById(cancelButtonId);
   const bookingPanelDateTag = document.getElementById(bookingPanelDateTagId);
   const bookingPanelTimeTag = document.getElementById(bookingPanelTimeTagId);
 
-  console.log(submitButton);
-
   if (!submitButton || !bookingPanelDateTag || !bookingPanelTimeTag) {
+    if (cancelButton) {
+      click(cancelButton);
+      await waitMs();
+    }
+
     return;
   }
 
-  if (cancelButton) {
-    click(cancelButton);
-  }
+  if (submitButton) {
+    const selectedDay = parseInt(
+      bookingPanelDateTag.innerText.split(".")[0],
+    ).toString();
+    const selectedHours = parseInt(
+      bookingPanelTimeTag.innerText.split(":")[0],
+    ).toString();
 
-  await waitMs();
+    const isAllowed = timestamps.some((val) => {
+      const date = new Date(val);
+      return (
+        date.getDate().toString() === selectedDay &&
+        date.getHours().toString() === selectedHours
+      );
+    });
+
+    if (isAllowed) {
+      click(submitButton);
+    }
+
+    if (!isAllowed && cancelButton) {
+      click(cancelButton);
+    }
+
+    await waitMs();
+  }
 }

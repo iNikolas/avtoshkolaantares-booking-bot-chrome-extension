@@ -29,7 +29,10 @@ async function main() {
       click(day);
 
       try {
-        const bookings = await checkForBooking(day.innerText);
+        const bookings = await checkForBooking(
+          day.innerText,
+          config.timestamps,
+        );
 
         if (bookings.length) {
           click(bookings[0]);
@@ -38,11 +41,11 @@ async function main() {
           break;
         }
       } catch (e) {
-        console.log(e);
+        void e;
       }
     }
 
-    await confirmBooking();
+    await confirmBooking(config.timestamps);
 
     chrome.storage.onChanged.removeListener(updateConfig);
   }
