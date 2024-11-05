@@ -1,4 +1,4 @@
-import { Loader } from "@components";
+import { DatePicker, Loader } from "@components";
 import { updateConfig } from "@utils";
 
 import { useConfig, useIsAllowedDomainCheck } from "./utils";
@@ -16,7 +16,7 @@ export function BookingForm() {
   };
 
   if (!config || isAllowedDomain == null) {
-    return <Loader className="mx-auto my-2 block" />;
+    return <Loader />;
   }
 
   if (!isAllowedDomain) {
@@ -30,6 +30,7 @@ export function BookingForm() {
   return (
     <div>
       <form onSubmit={handleStart}>
+        <DatePicker />
         <button
           className="btn btn-primary"
           disabled={config.isRunning || !isAllowedDomain}

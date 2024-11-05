@@ -1,81 +1,53 @@
-"use script";
+import { retrieveFullConfig, waitMs } from "@utils";
 
-import { retrieveFullConfig } from "@utils";
-// import { waitForMs } from "@config";
+import {
+  checkForBooking,
+  click,
+  confirmBooking,
+  retrieveCalendarDays,
+} from "./utils";
 
-chrome.storage.onChanged.addListener(onConfigChanged);
+async function main() {
+  while (true) {
+    let config = await retrieveFullConfig();
 
-async function onConfigChanged() {
-  const config = await retrieveFullConfig();
+    const updateConfig = async () => (config = await retrieveFullConfig());
 
-  const { isRunning } = config;
+    chrome.storage.onChanged.addListener(updateConfig);
 
-  if (isRunning) {
-    const days = retrieveCalendarDays();
+    const days = retrieveCalendarDays(config.timestamps);
+
+    if (!config.isRunning) {
+      break;
+    }
 
     for (const day of days) {
+      if (!config.isRunning) {
+        break;
+      }
+
       click(day);
 
       try {
-        // const result = await checkForBooking(day.innerText);
+        const bookings = await checkForBooking(day.innerText);
+
+        if (bookings.length) {
+          click(bookings[0]);
+
+          await waitMs();
+          break;
+        }
       } catch (e) {
         console.log(e);
       }
     }
+
+    await confirmBooking();
+
+    chrome.storage.onChanged.removeListener(updateConfig);
   }
+
+  setTimeout(main);
 }
 
-function retrieveCalendarDays(): HTMLTableCellElement[] {
-  return Array.from(
-    document.querySelectorAll<HTMLTableCellElement>("td.next-month"),
-  );
-}
-
-function click(element: HTMLElement) {
-  const clickEvent = new MouseEvent("click", {
-    bubbles: true,
-    cancelable: true,
-    view: window,
-  });
-
-  element.dispatchEvent(clickEvent);
-}
-
-// async function checkForBooking(day: string): Promise<HTMLTableElement> {
-//   return new Promise((resolve, reject) => {
-//     const startTime = performance.now();
-
-//     function searchForElement() {
-//       const element = document.querySelector<HTMLTableElement>(".lesson-table");
-
-//       const textLabel =
-//         document.getElementById("MainContent_Label6")?.innerText;
-
-//       const isCurrentDay = !!textLabel?.includes(
-//         ` ${day.length === 1 ? `0${day}` : day}.`,
-//       );
-
-//       if (isCurrentDay && textLabel?.includes("На жаль")) {
-//         reject(null);
-//       }
-
-//       if (element && isCurrentDay) {
-//         resolve(element);
-//       }
-
-//       if (performance.now() - startTime >= waitForMs) {
-//         reject(null);
-//       }
-
-//       if (document.visibilityState === "visible") {
-//         return requestAnimationFrame(searchForElement);
-//       }
-
-//       setTimeout(searchForElement);
-//     }
-
-//     searchForElement();
-//   });
-// }
-
-onConfigChanged();
+main();

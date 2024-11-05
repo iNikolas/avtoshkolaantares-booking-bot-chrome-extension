@@ -9,7 +9,10 @@ export function Loader({
 >) {
   return (
     <div
-      className={cn("loading loading-spinner loading-lg", className)}
+      className={cn(
+        "loading loading-spinner loading-lg mx-auto my-2 block",
+        className,
+      )}
       {...props}
     />
   );
