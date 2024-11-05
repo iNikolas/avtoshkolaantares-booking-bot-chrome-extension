@@ -113,11 +113,6 @@ export async function confirmBooking(timestamps: Config["timestamps"]) {
   const bookingPanelTimeTag = document.getElementById(bookingPanelTimeTagId);
 
   if (!submitButton || !bookingPanelDateTag || !bookingPanelTimeTag) {
-    if (cancelButton) {
-      click(cancelButton);
-      await waitMs();
-    }
-
     return;
   }
 

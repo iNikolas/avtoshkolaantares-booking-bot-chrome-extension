@@ -28,11 +28,11 @@ export function BookingForm() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleStart}>
+    <>
+      <form className="flex flex-col gap-2 items-center" onSubmit={handleStart}>
         <DatePicker />
         <button
-          className="btn btn-primary"
+          className="btn btn-success"
           disabled={config.isRunning || !isAllowedDomain}
           type="submit"
         >
@@ -49,6 +49,6 @@ export function BookingForm() {
           Stop bot
         </button>
       )}
-    </div>
+    </>
   );
 }
