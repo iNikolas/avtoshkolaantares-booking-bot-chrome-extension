@@ -9,15 +9,12 @@ import {
 
 async function main() {
   while (true) {
-    let config = await retrieveFullConfig();
-
-    const updateConfig = async () => (config = await retrieveFullConfig());
-
-    chrome.storage.onChanged.addListener(updateConfig);
+    const config = await retrieveFullConfig();
 
     const days = retrieveCalendarDays(config.timestamps);
 
     if (!config.isRunning) {
+      await waitMs(3000);
       break;
     }
 
@@ -46,8 +43,6 @@ async function main() {
     }
 
     await confirmBooking(config.timestamps);
-
-    chrome.storage.onChanged.removeListener(updateConfig);
   }
 
   setTimeout(main);
